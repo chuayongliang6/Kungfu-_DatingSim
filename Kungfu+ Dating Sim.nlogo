@@ -9,7 +9,7 @@ turtles-own
 ;;  This procedure will setup 150 turtles, by randomly placing them around the world.
 to setup
   clear-all
-  create-turtles 100
+  create-turtles num-turtles
   [
     ;;  turtles get random coordinates, and they are
     ;;  light gray (to show they don't have partners yet).
