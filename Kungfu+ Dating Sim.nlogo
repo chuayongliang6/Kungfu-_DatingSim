@@ -41,6 +41,12 @@ end
 
 ;; have each turtle move until they find a partner at which point they turn red
 to find-partners
+  ;; Check for periodic breakups (30% chance every 100 ticks)
+  if ticks mod 100 = 0 [check-periodic-breakups]
+  
+  ;; Check for breakups due to meeting other turtles
+  check-meeting-breakups
+
   let singles turtles with [partner = nobody]
   if not any? singles [ stop ]
 
@@ -78,6 +84,67 @@ to find-partners
   ]
 
   tick
+end
+
+;; Check for periodic breakups (30% chance every 100 ticks)
+to check-periodic-breakups
+  let paired-turtles turtles with [partner != nobody]
+  
+  ask paired-turtles [
+    ;; 30% chance of breaking up
+    if random-float 1 < 0.3 [
+      ;; Breakup with partner
+      let ex-partner partner
+      set partner nobody
+      set color gray + 2
+      
+      ask ex-partner [
+        set partner nobody
+        set color gray + 2
+      ]
+    ]
+  ]
+end
+
+;; Check for breakups caused by singles meeting paired turtles
+to check-meeting-breakups
+  let singles turtles with [partner = nobody]
+  
+  ask singles [
+    ;; Check nearby turtles in a partnership
+    let nearby-paired other turtles in-radius 1 with [partner != nobody]
+    
+    ask nearby-paired [
+      ;; 20% chance of breaking up when a single turtle bumps into paired turtle
+      if random-float 1 < 0.2 [
+        ;; Store current partner before breaking up
+        let current-partner partner
+        let single-turtle myself
+        
+        ;; Break up with current partner
+        set partner nobody
+        
+        ask current-partner [
+          set partner nobody
+          set color gray + 2
+        ]
+        
+        ;; 50% chance to partner with the single turtle that caused breakup
+        ifelse random-float 1 < 0.5 [
+          set partner single-turtle
+          set color red
+          
+          ask single-turtle [
+            set partner myself
+            set color red
+          ]
+        ] [
+          ;; No new partnership, return to single status
+          set color gray + 2
+        ]
+      ]
+    ]
+  ]
 end
 
 
