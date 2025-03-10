@@ -1,5 +1,5 @@
 extensions [table]
-
+;zzz
 turtles-own
 [
   partner   ;;  the turtle that is our partner, or "nobody" if we don't have one
